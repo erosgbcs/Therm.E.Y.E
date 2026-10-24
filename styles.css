@@ -1239,3 +1239,140 @@
           grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
         }
       }
+/* ═══════════ MOBILE RESPONSIVENESS FIXES ═══════════ */
+
+/* 1. Prevent Grid items from stretching past the viewport */
+.dashboard > * {
+  min-width: 0;
+}
+
+/* 2. Ensure the log table wrapper scrolls internally instead of pushing the page */
+.log-table-wrapper {
+  width: 100%;
+  min-width: 0;
+}
+
+/* 3. Fix Header and Buttons on Mobile */
+@media (max-width: 768px) {
+  #dashboard-container {
+    padding: 1rem; /* Reduce side padding to give more room */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+  }
+
+  .header-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-buttons {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+
+  /* Make buttons flexible so they don't cut off */
+  .theme-btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  /* Fix Hero Card Text Wrapping */
+  .hero-card {
+    padding: 1.5rem 1rem;
+  }
+  
+  #heroSensorLabel {
+    display: inline-block;
+    max-width: 100%;
+    word-wrap: break-word;
+  }
+}
+
+/* 4. Further tweaks for very small screens (like 400px in your screenshot) */
+@media (max-width: 450px) {
+  .temp-display {
+    font-size: 3rem; /* Slightly smaller temp font for tiny screens */
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr; /* Stack stats vertically if too cramped */
+    gap: 0.75rem;
+  }
+  
+  .sensor-cards-grid {
+    grid-template-columns: 1fr; /* Stack sensor cards instead of side-by-side */
+  }
+  
+  .log-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .log-action-btns {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+/* ═══════════ THERMAL MAPPING MOBILE FIXES (FINAL) ═══════════ */
+
+@media (max-width: 768px) {
+  /* 1. Override the inline 1fr 1fr grid to stack vertically using flex */
+  #thermalMappingPage > div[style*="grid-template-columns: 1fr 1fr"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+
+  /* 2. Fix the Top Header & Action Buttons */
+  #thermalMappingPage .header-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #thermalMappingPage .action-buttons {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  #thermalMappingPage .action-buttons button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* 3. Force the grid container to fit the screen */
+  #thermalGridContainer {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  /* 4. Force cells to shrink and scale text perfectly */
+  #thermalGridContainer > div {
+    min-width: 0 !important; 
+    min-height: 0 !important;
+    font-size: clamp(0.25rem, 1.5vw, 0.5rem) !important; 
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    border-radius: 1px !important;
+  }
+  
+  /* 5. Fix Map History Table from pushing the page width */
+  #thermalMappingPage .log-card {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+  
+  #thermalMappingPage .log-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
