@@ -33,8 +33,18 @@
 #include <ArduinoJson.h>
 
 // ================= USER CONFIG =================
-const char* WIFI_SSID     = "ADMIN_SERVER";
-const char* WIFI_PASSWORD = "G5CMgUD6";
+// Add as many networks as you want here. It will try them in order.
+struct NetworkConfig {
+  const char* ssid;
+  const char* password;
+};
+
+const NetworkConfig WIFI_NETWORKS[] = {
+  {"ADMIN_SERVER", "G5CMgUD6"},      // admin wifi Agsamosam
+  {"HonorM", "hahawalangnett"}, // com lab wifi ffhnas change it ssid and password
+  {"HonorM", "hahawalangnett"}  // same as other
+};
+const int NUM_NETWORKS = sizeof(WIFI_NETWORKS) / sizeof(WIFI_NETWORKS[0]);
 
 // Must match the dashboard's DEFAULT_ROOMS keys
 const char* ROOM_ID    = "room1";
@@ -232,19 +242,33 @@ void setup() {
     Serial.println("MLX90614 #2 Initialized.");
   }
 
-  // 5. WiFi
+  // 5. WiFi (Multi-Network Fallback)
   WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  Serial.print("Connecting to WiFi");
-  unsigned long t0 = millis();
-  while (WiFi.status() != WL_CONNECTED && millis() - t0 < 15000) {
-    delay(500);
-    Serial.print(".");
+  bool wifiConnected = false;
+
+  for (int i = 0; i < NUM_NETWORKS; i++) {
+    Serial.printf("Connecting to WiFi: %s", WIFI_NETWORKS[i].ssid);
+    WiFi.begin(WIFI_NETWORKS[i].ssid, WIFI_NETWORKS[i].password);
+    
+    unsigned long t0 = millis();
+    // Try for 10 seconds per network
+    while (WiFi.status() != WL_CONNECTED && millis() - t0 < 10000) {
+      delay(500);
+      Serial.print(".");
+    }
+    
+    if (WiFi.status() == WL_CONNECTED) {
+      wifiConnected = true;
+      Serial.printf("\nWiFi connected! IP: %s\n", WiFi.localIP().toString().c_str());
+      break; // Exit the loop because we successfully connected
+    } else {
+      Serial.println("\nFailed to connect. Trying next network...");
+      WiFi.disconnect(); // Reset before trying the next one
+    }
   }
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.printf("\nWiFi connected. IP: %s\n", WiFi.localIP().toString().c_str());
-  } else {
-    Serial.println("\nWiFi failed — running offline (local alarm only).");
+
+  if (!wifiConnected) {
+    Serial.println("\nAll WiFi networks failed — running offline (local alarm only).");
   }
 
   // 6. WebSocket server
