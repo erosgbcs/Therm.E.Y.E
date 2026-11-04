@@ -1438,22 +1438,23 @@ window.recordMapSnapshot = recordMapSnapshot;
         if (watchdogInterval) clearInterval(watchdogInterval);
         lastDataReceivedTime = Date.now();
 
-        // Check every 5 seconds
+        // Check every 500 milliseconds for a super fast response
         watchdogInterval = setInterval(() => {
-          // If 10 seconds pass with NO data, zero out readings
-          if (Date.now() - lastDataReceivedTime > 10000) {
+          // If 3 seconds pass with NO data, zero out readings and reconnect
+          if (Date.now() - lastDataReceivedTime > 3000) {
             zeroOutSensorReadings();
             
-            // NEW: Force reconnect if the connection is a "zombie"
+            // Force reconnect if the connection is a "zombie"
             esp32Sockets.forEach((socket, index) => {
               if (socket && socket.readyState === WebSocket.OPEN) {
-                console.log(`[Watchdog] No data from ESP32 #${index + 1}. Forcing reconnect...`);
-                socket.close(); // This triggers the auto-reconnect 5-second timer in your code!
+                console.log(`[Watchdog] No data from ESP32 #${index + 1} for 3s. Forcing reconnect...`);
+                socket.close(); // This triggers the auto-reconnect timer
               }
             });
           }
-        }, 5000);
+        }, 500); // Check the clock every 0.5 seconds
       }
+
 
       // Opens a WebSocket connection to the configured ESP32 endpoint and handles live telemetry messages.
       function connectToEsp32(index) {
