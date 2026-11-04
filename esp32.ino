@@ -66,6 +66,7 @@ const unsigned long TELEMETRY_INTERVAL_MS = 1000;
 #define LED_G_PIN 25
 #define LED_R_PIN 26
 #define BUZ_PIN   33
+#define BTN_PIN   27  // ON/OFF Button
 
 // ================= OLED =================
 #define SCREEN_WIDTH  128
@@ -78,6 +79,12 @@ bool          displayOk         = false;
 unsigned long lastDisplayUpdate = 0;
 unsigned long displayBootTime   = 0;              // Tracks time for the 3-second splash
 const unsigned long DISPLAY_INTERVAL_MS = 1000;   // 1 Hz
+
+// Button State
+bool systemActive = true;
+bool lastBtnState = HIGH;
+unsigned long lastDebounceTime = 0;
+const unsigned long debounceDelay = 50;
 
 // ================= OBJECTS =================
 Adafruit_MLX90614 mlx1;
@@ -174,7 +181,18 @@ void updateDisplay() {
     return; // Stop here, don't draw the dashboard yet
   }
 
-  // --- 2. MAIN DASHBOARD (Shows after 3 seconds) ---
+  // --- 2. SYSTEM OFF SCREEN ---
+  if (!systemActive) {
+    display.setTextSize(2);
+    display.setCursor(16, 16);
+    display.println("SYSTEM");
+    display.setCursor(36, 36);
+    display.println("OFF");
+    display.display();
+    return; // Skip the rest of the dashboard drawing
+  }
+
+  // --- 3. MAIN DASHBOARD (Shows after 3 seconds) ---
   bool t1ok = sensor1Ok && !isnan(temp1);
   bool t2ok = sensor2Ok && !isnan(temp2);
 
@@ -300,6 +318,7 @@ void setup() {
   pinMode(LED_G_PIN, OUTPUT);
   pinMode(LED_R_PIN, OUTPUT);
   pinMode(BUZ_PIN, OUTPUT);
+  pinMode(BTN_PIN, INPUT_PULLUP); // Button with internal pull-up resistor
   digitalWrite(LED_G_PIN, LOW);
   digitalWrite(LED_R_PIN, LOW);
   digitalWrite(BUZ_PIN, LOW);
@@ -392,6 +411,40 @@ void setup() {
 void loop() {
   webSocket.loop();
 
+  // --- 0. Read ON/OFF Button (Debounced) ---
+  bool reading = digitalRead(BTN_PIN);
+  if (reading != lastBtnState) {
+    lastDebounceTime = millis();
+  }
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    static bool btnState = HIGH;
+    if (reading != btnState) {
+      btnState = reading;
+      if (btnState == LOW) { // Button was pressed
+        systemActive = !systemActive; // Toggle state
+        Serial.printf("\n[BTN] System %s\n", systemActive ? "ON" : "OFF");
+        lastDisplayUpdate = 0; // Force immediate OLED refresh
+      }
+    }
+  }
+  lastBtnState = reading;
+
+  // --- SYSTEM OFF STATE ---
+  if (!systemActive) {
+    digitalWrite(LED_G_PIN, LOW);
+    digitalWrite(LED_R_PIN, LOW);
+    noTone(BUZ_PIN);
+    servo1.write(90); // Center servos
+    servo2.write(90);
+    
+    unsigned long nowOff = millis();
+    if (displayOk && (nowOff - lastDisplayUpdate >= DISPLAY_INTERVAL_MS)) {
+      lastDisplayUpdate = nowOff;
+      updateDisplay();
+    }
+    return; // Skips all sensor reading, alarms, and telemetry
+  }
+
   // --- 1. Read temperatures ---
   if (sensor1Ok) temp1 = mlx1.readObjectTempC();
   if (sensor2Ok) temp2 = mlx2.readObjectTempC();
@@ -438,7 +491,6 @@ void loop() {
   }
 
   // --- 4. Independent non-blocking servo sweep ---
-  unsigned long now = millis();
   if (now - lastServoUpdate >= servoInterval) {
     lastServoUpdate = now;
 
