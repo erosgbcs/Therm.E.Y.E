@@ -1443,6 +1443,14 @@ window.recordMapSnapshot = recordMapSnapshot;
           // If 10 seconds pass with NO data, zero out readings
           if (Date.now() - lastDataReceivedTime > 10000) {
             zeroOutSensorReadings();
+            
+            // NEW: Force reconnect if the connection is a "zombie"
+            esp32Sockets.forEach((socket, index) => {
+              if (socket && socket.readyState === WebSocket.OPEN) {
+                console.log(`[Watchdog] No data from ESP32 #${index + 1}. Forcing reconnect...`);
+                socket.close(); // This triggers the auto-reconnect 5-second timer in your code!
+              }
+            });
           }
         }, 5000);
       }
