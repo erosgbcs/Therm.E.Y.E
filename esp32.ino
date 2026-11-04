@@ -76,6 +76,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 bool          displayOk         = false;
 unsigned long lastDisplayUpdate = 0;
+unsigned long displayBootTime   = 0;              // Tracks time for the 3-second splash
 const unsigned long DISPLAY_INTERVAL_MS = 1000;   // 1 Hz
 
 // ================= OBJECTS =================
@@ -151,71 +152,84 @@ void handleSimulationMessage(JsonDocument& doc) {
 void updateDisplay() {
   if (!displayOk) return;
 
+  display.clearDisplay();
+  display.setTextColor(SSD1306_WHITE);
+
+  // --- 1. BOOT SPLASH SCREEN (Shows for first 3 seconds) ---
+  if (millis() - displayBootTime < 3000) {
+    display.setTextSize(2);
+    display.setCursor(0, 0);
+    display.println("THERM");
+    display.println("E.Y.E");
+    
+    display.setTextSize(1);
+    display.setCursor(0, 40);
+    display.println("WiFi Connected!");
+    
+    display.setCursor(0, 54);
+    display.print("IP: ");
+    display.println(WiFi.localIP().toString());
+    
+    display.display();
+    return; // Stop here, don't draw the dashboard yet
+  }
+
+  // --- 2. MAIN DASHBOARD (Shows after 3 seconds) ---
   bool t1ok = sensor1Ok && !isnan(temp1);
   bool t2ok = sensor2Ok && !isnan(temp2);
 
   float eff1 = (simulationActive && sim1Valid) ? simulatedTemp1 : temp1;
   float eff2 = (simulationActive && sim2Valid) ? simulatedTemp2 : temp2;
-  bool  alarm = (t1ok && eff1 > currentSafeLimit) ||
-                (t2ok && eff2 > currentSafeLimit);
+  bool  alarm = (t1ok && eff1 > currentSafeLimit) || (t2ok && eff2 > currentSafeLimit);
 
   char line[24];
 
-  display.clearDisplay();
+  // Title (Small)
   display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-
-  // Title
   display.setCursor(0, 0);
   display.println("THERM E.Y.E");
   display.drawLine(0, 10, SCREEN_WIDTH - 1, 10, SSD1306_WHITE);
 
-  // Temps
-  display.setCursor(0, 13);
+  // T1 Temperature (BIG)
+  display.setTextSize(2);
+  display.setCursor(0, 12); // Moved up slightly
   if (t1ok) {
-    snprintf(line, sizeof(line), "T1: %.1f %c", toDisplayUnit(temp1),
-             displayFahrenheit ? 'F' : 'C');
+    snprintf(line, sizeof(line), "T1:%.1f%c", toDisplayUnit(temp1), displayFahrenheit ? 'F' : 'C');
   } else {
-    snprintf(line, sizeof(line), "T1: --");
+    snprintf(line, sizeof(line), "T1:--");
   }
   display.println(line);
 
-  display.setCursor(0, 23);
+  // T2 Temperature (BIG)
+  display.setCursor(0, 30); // Moved up slightly
   if (t2ok) {
-    snprintf(line, sizeof(line), "T2: %.1f %c", toDisplayUnit(temp2),
-             displayFahrenheit ? 'F' : 'C');
+    snprintf(line, sizeof(line), "T2:%.1f%c", toDisplayUnit(temp2), displayFahrenheit ? 'F' : 'C');
   } else {
-    snprintf(line, sizeof(line), "T2: --");
+    snprintf(line, sizeof(line), "T2:--");
   }
   display.println(line);
 
-  // Limit
-  display.setCursor(0, 33);
-  snprintf(line, sizeof(line), "Limit: %.1f %c",
-           toDisplayUnit(currentSafeLimit),
-           displayFahrenheit ? 'F' : 'C');
-  display.println(line);
+  // Limit and Status (Small)
+  display.setTextSize(1);
+  display.setCursor(0, 48); // Moved up
+  snprintf(line, sizeof(line), "Limit:%.1f%c", toDisplayUnit(currentSafeLimit), displayFahrenheit ? 'F' : 'C');
+  display.print(line);
 
-  // Status
-  display.setCursor(0, 43);
-  display.print("Status: ");
+  display.setCursor(85, 48); // Moved up
   if (!t1ok || !t2ok) {
-    display.println("SENSOR ERR");
+    display.println("ERR");
   } else if (alarm) {
-    display.println("ALARM!");
+    display.println("ALARM");
   } else {
-    display.println("NORMAL");
+    display.println("OK");
   }
 
-  // Bottom line: SIM / IP / OFFLINE
-  display.setCursor(0, 53);
+  // Bottom Line (Small) - IP REMOVED
+  display.setCursor(0, 56); // Moved up to fit perfectly on the screen
   if (simulationActive) {
     display.println("SIM ACTIVE");
-  } else if (WiFi.status() == WL_CONNECTED) {
-    display.print("IP: ");
-    display.println(WiFi.localIP().toString());
   } else {
-    display.println("WiFi: OFFLINE");
+    display.println("MONITORING"); 
   }
 
   display.display();
@@ -369,7 +383,8 @@ void setup() {
   Serial.println("Setup complete. Enter this IP in the dashboard's 'ESP32 Host / IP' field.");
   Serial.printf("  -> %s\n", WiFi.localIP().toString().c_str());
 
-  // 9. Show final state on OLED
+  // 9. Show final state on OLED (Starts the 3-second IP splash screen)
+  displayBootTime = millis();
   updateDisplay();
 }
 
