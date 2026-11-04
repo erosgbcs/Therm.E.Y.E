@@ -1588,12 +1588,12 @@ if (payload.thermalGrid && Array.isArray(payload.thermalGrid) && payload.thermal
             if (esp32Sockets[index] === socket) esp32Sockets[index] = null;
             zeroOutSensorReadings();
 
-            // Automatically attempt to reconnect every 5 seconds
+            // Automatically attempt to reconnect every 2 seconds (changed from 5s)
             setTimeout(() => {
               if (monitoringEnabled) {
                 connectToEsp32(index);
               }
-            }, 5000);
+            }, 2000);
           });
 
           socket.addEventListener("error", () => {
