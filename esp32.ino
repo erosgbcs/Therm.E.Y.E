@@ -1,16 +1,16 @@
 /*
- * THERM E.Y.E - ESP32 Firmware (WebSocket + Dual MLX90614 + Auto-Sweep)
+ * THERM E.Y.E - ESP32 Firmware (WebSocket + Dual MLX90614 + Auto-Sweep + OLED)
  *
  * Hardware:
  * - ESP32 DevKit V1
  * - 2x MLX90614 (I2C Bus A and Bus B)
+ * - SSD1306 OLED (128x64, I2C 0x3C, on Bus A)
  * - 2x SG90 Servos (auto-sweep)
  * - LEDs (Green, Red), Buzzer
  *
- * Integrates with the ThermE.Y.E web dashboard over WebSocket (port 81).
- *
  * REQUIRED LIBRARIES (Arduino Library Manager):
  *   - Adafruit MLX90614 Library
+ *   - Adafruit SSD1306  (pulls in Adafruit GFX)
  *   - ESP32Servo
  *   - WebSockets         (by Markus Sattler)
  *   - ArduinoJson        (v6.21+)
@@ -18,11 +18,6 @@
  * WARNING FROM SCHEMATIC:
  *   Do NOT plug in USB while VIN is powered.
  *   Disconnect battery before programming.
- *
- * NOTE ON THE DASHBOARD'S UNIT BUG:
- *   script.js converts incoming WebSocket temperatures from °F back to °C
- *   when the UI is in Fahrenheit. To stay compatible, this firmware sends
- *   readings in whichever unit the dashboard is currently displaying.
  */
 
 #include <WiFi.h>
@@ -31,31 +26,31 @@
 #include <Adafruit_MLX90614.h>
 #include <ESP32Servo.h>
 #include <ArduinoJson.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 
 // ================= USER CONFIG =================
-// Add as many networks as you want here. It will try them in order.
 struct NetworkConfig {
   const char* ssid;
   const char* password;
 };
 
 const NetworkConfig WIFI_NETWORKS[] = {
-  {"ADMIN_SERVER", "G5CMgUD6"},      // admin wifi Agsamosam
-  {"HonorM", "hahawalangnett"}, // com lab wifi ffhnas change it ssid and password
-  {"HonorM", "hahawalangnett"}  // same as other
+  {"ADMIN_SERVER", "G5CMgUD6"},
+  {"HonorM", "hahawalangnett"},
+  {"HonorM", "hahawalangnett"}
 };
 const int NUM_NETWORKS = sizeof(WIFI_NETWORKS) / sizeof(WIFI_NETWORKS[0]);
 
-// Must match the dashboard's DEFAULT_ROOMS keys
 const char* ROOM_ID    = "room1";
 const char* SENSOR1_ID = "AMG8833_1";
 const char* SENSOR2_ID = "AMG8833_2";
 
 const uint16_t WS_PORT = 81;
-const unsigned long TELEMETRY_INTERVAL_MS = 1000;  // 1 Hz broadcast
+const unsigned long TELEMETRY_INTERVAL_MS = 1000;
 
 // ================= PIN DEFINITIONS =================
-// I2C Bus A (MLX90614 #1)
+// I2C Bus A (MLX90614 #1 + OLED)
 #define SDA_A 21
 #define SCL_A 22
 
@@ -72,6 +67,17 @@ const unsigned long TELEMETRY_INTERVAL_MS = 1000;  // 1 Hz broadcast
 #define LED_R_PIN 26
 #define BUZ_PIN   33
 
+// ================= OLED =================
+#define SCREEN_WIDTH  128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET    -1
+#define SCREEN_ADDRESS 0x3C
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+bool          displayOk         = false;
+unsigned long lastDisplayUpdate = 0;
+const unsigned long DISPLAY_INTERVAL_MS = 1000;   // 1 Hz
+
 // ================= OBJECTS =================
 Adafruit_MLX90614 mlx1;
 Adafruit_MLX90614 mlx2;
@@ -87,17 +93,15 @@ float temp2 = 0.0f;
 bool  sensor1Ok = false;
 bool  sensor2Ok = false;
 
-float currentSafeLimit  = 50.0f;    // °C — matches dashboard default
-bool  displayFahrenheit = false;    // set by dashboard unit toggle
+float currentSafeLimit  = 50.0f;
+bool  displayFahrenheit = false;
 
-// Simulation (from dashboard)
 bool  simulationActive = false;
 float simulatedTemp1   = 0.0f;
 float simulatedTemp2   = 0.0f;
 bool  sim1Valid        = false;
 bool  sim2Valid        = false;
 
-// Servo sweep (Independent variables for each servo)
 int servo1Pos = 0;
 int servo1Dir = 1;
 int servo2Pos = 0;
@@ -108,7 +112,6 @@ const int servoInterval = 20;
 unsigned long lastTelemetry = 0;
 
 // ================= HELPERS =================
-// Converts a Celsius reading into whatever the dashboard is displaying.
 float toDisplayUnit(float c) {
   return displayFahrenheit ? (c * 9.0f / 5.0f + 32.0f) : c;
 }
@@ -131,7 +134,6 @@ void broadcastTelemetry(float t1, float t2) {
 
 void handleSimulationMessage(JsonDocument& doc) {
   if (!doc.containsKey("simulation")) return;
-
   simulationActive = doc["simulation"].as<bool>();
 
   if (simulationActive && doc.containsKey("temperature") && !doc["temperature"].isNull()) {
@@ -145,11 +147,86 @@ void handleSimulationMessage(JsonDocument& doc) {
   Serial.printf("[WS] Simulation %s\n", simulationActive ? "START" : "STOP");
 }
 
+// ================= OLED DISPLAY =================
+void updateDisplay() {
+  if (!displayOk) return;
+
+  bool t1ok = sensor1Ok && !isnan(temp1);
+  bool t2ok = sensor2Ok && !isnan(temp2);
+
+  float eff1 = (simulationActive && sim1Valid) ? simulatedTemp1 : temp1;
+  float eff2 = (simulationActive && sim2Valid) ? simulatedTemp2 : temp2;
+  bool  alarm = (t1ok && eff1 > currentSafeLimit) ||
+                (t2ok && eff2 > currentSafeLimit);
+
+  char line[24];
+
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+
+  // Title
+  display.setCursor(0, 0);
+  display.println("THERM E.Y.E");
+  display.drawLine(0, 10, SCREEN_WIDTH - 1, 10, SSD1306_WHITE);
+
+  // Temps
+  display.setCursor(0, 13);
+  if (t1ok) {
+    snprintf(line, sizeof(line), "T1: %.1f %c", toDisplayUnit(temp1),
+             displayFahrenheit ? 'F' : 'C');
+  } else {
+    snprintf(line, sizeof(line), "T1: --");
+  }
+  display.println(line);
+
+  display.setCursor(0, 23);
+  if (t2ok) {
+    snprintf(line, sizeof(line), "T2: %.1f %c", toDisplayUnit(temp2),
+             displayFahrenheit ? 'F' : 'C');
+  } else {
+    snprintf(line, sizeof(line), "T2: --");
+  }
+  display.println(line);
+
+  // Limit
+  display.setCursor(0, 33);
+  snprintf(line, sizeof(line), "Limit: %.1f %c",
+           toDisplayUnit(currentSafeLimit),
+           displayFahrenheit ? 'F' : 'C');
+  display.println(line);
+
+  // Status
+  display.setCursor(0, 43);
+  display.print("Status: ");
+  if (!t1ok || !t2ok) {
+    display.println("SENSOR ERR");
+  } else if (alarm) {
+    display.println("ALARM!");
+  } else {
+    display.println("NORMAL");
+  }
+
+  // Bottom line: SIM / IP / OFFLINE
+  display.setCursor(0, 53);
+  if (simulationActive) {
+    display.println("SIM ACTIVE");
+  } else if (WiFi.status() == WL_CONNECTED) {
+    display.print("IP: ");
+    display.println(WiFi.localIP().toString());
+  } else {
+    display.println("WiFi: OFFLINE");
+  }
+
+  display.display();
+}
+
+// ================= WEBSOCKET =================
 void onWebSocketEvent(uint8_t clientNum, WStype_t type, uint8_t* payload, size_t length) {
   switch (type) {
     case WStype_CONNECTED:
       Serial.printf("[WS] Client %u connected\n", clientNum);
-      broadcastTelemetry(temp1, temp2);            // initial snapshot
+      broadcastTelemetry(temp1, temp2);
       break;
 
     case WStype_DISCONNECTED:
@@ -164,13 +241,11 @@ void onWebSocketEvent(uint8_t clientNum, WStype_t type, uint8_t* payload, size_t
         break;
       }
 
-      // Bare safeLimit (sent when user edits the limit input)
       if (doc.containsKey("safeLimit")) {
         float v = doc["safeLimit"].as<float>();
         if (!isnan(v) && v > 0) currentSafeLimit = v;
       }
 
-      // Unit toggle
       if (doc.containsKey("unit")) {
         String u = doc["unit"].as<String>();
         displayFahrenheit = (u == "F" || u == "f");
@@ -178,7 +253,6 @@ void onWebSocketEvent(uint8_t clientNum, WStype_t type, uint8_t* payload, size_t
 
       String msgType = doc["type"] | "";
       if (msgType == "connected") {
-        // Dashboard sends {type:"connected", safeLimit:…} on socket open
         if (doc.containsKey("safeLimit")) {
           float v = doc["safeLimit"].as<float>();
           if (!isnan(v) && v > 0) currentSafeLimit = v;
@@ -186,13 +260,11 @@ void onWebSocketEvent(uint8_t clientNum, WStype_t type, uint8_t* payload, size_t
       } else if (msgType == "requestTelemetry") {
         broadcastTelemetry(temp1, temp2);
       } else if (msgType == "updateSensorName") {
-        // No OLED on this board — just log it so the dashboard's push is acknowledged
         String sid  = doc["sensorId"]   | "";
         String name = doc["sensorName"] | "";
         Serial.printf("[WS] Sensor name: %s -> %s\n", sid.c_str(), name.c_str());
       }
 
-      // Simulation envelope
       if (doc.containsKey("simulation")) {
         handleSimulationMessage(doc);
       }
@@ -218,14 +290,34 @@ void setup() {
   digitalWrite(LED_R_PIN, LOW);
   digitalWrite(BUZ_PIN, LOW);
 
-  // 2. Servos (SG90 pulse width 500–2400 µs)
+  // 2. Servos
   servo1.attach(SERVO1_PIN, 500, 2400);
   servo2.attach(SERVO2_PIN, 500, 2400);
   servo1.write(0);
   servo2.write(0);
 
-  // 3. I2C Bus A — MLX90614 #1
+  // 3. I2C Bus A — MLX90614 #1 + OLED
   Wire.begin(SDA_A, SCL_A);
+  // Optional: speed up OLED refresh (may break some MLX90614 clones):
+  // Wire.setClock(400000);
+
+  // 4. OLED init (same bus)
+  if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    Serial.println("Error: SSD1306 OLED not found. Check wiring!");
+    displayOk = false;
+  } else {
+    displayOk = true;
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0, 0);
+    display.println("THERM E.Y.E");
+    display.println("Booting...");
+    display.display();
+    Serial.println("SSD1306 OLED Initialized.");
+  }
+
+  // 5. MLX90614 #1 (Bus A)
   if (!mlx1.begin(0x5A, &Wire)) {
     Serial.println("Error: MLX90614 #1 (Bus A) not found. Check wiring!");
   } else {
@@ -233,7 +325,7 @@ void setup() {
     Serial.println("MLX90614 #1 Initialized.");
   }
 
-  // 4. I2C Bus B — MLX90614 #2
+  // 6. I2C Bus B — MLX90614 #2
   Wire1.begin(SDA_B, SCL_B);
   if (!mlx2.begin(0x5A, &Wire1)) {
     Serial.println("Error: MLX90614 #2 (Bus B) not found. Check wiring!");
@@ -242,28 +334,27 @@ void setup() {
     Serial.println("MLX90614 #2 Initialized.");
   }
 
-  // 5. WiFi (Multi-Network Fallback)
+  // 7. WiFi (Multi-Network Fallback)
   WiFi.mode(WIFI_STA);
   bool wifiConnected = false;
 
   for (int i = 0; i < NUM_NETWORKS; i++) {
     Serial.printf("Connecting to WiFi: %s", WIFI_NETWORKS[i].ssid);
     WiFi.begin(WIFI_NETWORKS[i].ssid, WIFI_NETWORKS[i].password);
-    
+
     unsigned long t0 = millis();
-    // Try for 10 seconds per network
     while (WiFi.status() != WL_CONNECTED && millis() - t0 < 10000) {
       delay(500);
       Serial.print(".");
     }
-    
+
     if (WiFi.status() == WL_CONNECTED) {
       wifiConnected = true;
       Serial.printf("\nWiFi connected! IP: %s\n", WiFi.localIP().toString().c_str());
-      break; // Exit the loop because we successfully connected
+      break;
     } else {
       Serial.println("\nFailed to connect. Trying next network...");
-      WiFi.disconnect(); // Reset before trying the next one
+      WiFi.disconnect();
     }
   }
 
@@ -271,12 +362,15 @@ void setup() {
     Serial.println("\nAll WiFi networks failed — running offline (local alarm only).");
   }
 
-  // 6. WebSocket server
+  // 8. WebSocket server
   webSocket.begin();
   webSocket.onEvent(onWebSocketEvent);
 
   Serial.println("Setup complete. Enter this IP in the dashboard's 'ESP32 Host / IP' field.");
   Serial.printf("  -> %s\n", WiFi.localIP().toString().c_str());
+
+  // 9. Show final state on OLED
+  updateDisplay();
 }
 
 // ================= LOOP =================
@@ -289,26 +383,22 @@ void loop() {
 
   bool t1Valid = sensor1Ok && !isnan(temp1);
   bool t2Valid = sensor2Ok && !isnan(temp2);
-  
-  // Independent heating flags
-  bool isHeating1 = false; 
-  bool isHeating2 = false; 
+
+  bool isHeating1 = false;
+  bool isHeating2 = false;
 
   if (!t1Valid || !t2Valid) {
     digitalWrite(LED_G_PIN, LOW);
     digitalWrite(LED_R_PIN, LOW);
     noTone(BUZ_PIN);
   } else {
-    // Effective temperature used for the local alarm (respects simulation)
     float eff1 = (simulationActive && sim1Valid) ? simulatedTemp1 : temp1;
     float eff2 = (simulationActive && sim2Valid) ? simulatedTemp2 : temp2;
 
     // --- 2. Local alarm logic ---
-    // Check each sensor independently
     if (eff1 > currentSafeLimit) isHeating1 = true;
     if (eff2 > currentSafeLimit) isHeating2 = true;
 
-    // Buzzer and LEDs trigger if EITHER sensor is heating
     if (isHeating1 || isHeating2) {
       digitalWrite(LED_G_PIN, LOW);
       digitalWrite(LED_R_PIN, HIGH);
@@ -327,25 +417,31 @@ void loop() {
     }
   }
 
-  // --- 4. Independent Non-blocking servo sweep ---
+  // --- 4. Independent non-blocking servo sweep ---
   unsigned long now = millis();
   if (now - lastServoUpdate >= servoInterval) {
     lastServoUpdate = now;
-    
-    // Servo 1 Logic (Controlled by Sensor 2 to fix crossed wiring)
+
+    // Servo 1 (controlled by Sensor 2 — crossed wiring)
     if (!isHeating2) {
       servo1Pos += servo1Dir;
       if (servo1Pos >= 180) { servo1Pos = 180; servo1Dir = -1; }
       else if (servo1Pos <= 0) { servo1Pos = 0; servo1Dir = 1; }
       servo1.write(servo1Pos);
     }
-    
-    // Servo 2 Logic (Controlled by Sensor 1 to fix crossed wiring)
+
+    // Servo 2 (controlled by Sensor 1 — crossed wiring)
     if (!isHeating1) {
       servo2Pos += servo2Dir;
       if (servo2Pos >= 180) { servo2Pos = 180; servo2Dir = -1; }
       else if (servo2Pos <= 0) { servo2Pos = 0; servo2Dir = 1; }
       servo2.write(servo2Pos);
     }
+  }
+
+  // --- 5. OLED refresh (1 Hz) ---
+  if (displayOk && (now - lastDisplayUpdate >= DISPLAY_INTERVAL_MS)) {
+    lastDisplayUpdate = now;
+    updateDisplay();
   }
 }
