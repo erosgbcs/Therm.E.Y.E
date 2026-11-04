@@ -402,34 +402,39 @@ void loop() {
   bool isHeating1 = false;
   bool isHeating2 = false;
 
-  if (!t1Valid || !t2Valid) {
+  // Get effective temperatures (respecting simulation)
+  float eff1 = (simulationActive && sim1Valid) ? simulatedTemp1 : temp1;
+  float eff2 = (simulationActive && sim2Valid) ? simulatedTemp2 : temp2;
+
+  // Check each sensor INDEPENDENTLY. Only trigger if the sensor is valid AND hot.
+  if (t1Valid && eff1 > currentSafeLimit) isHeating1 = true;
+  if (t2Valid && eff2 > currentSafeLimit) isHeating2 = true;
+
+  // --- 2. Local alarm logic ---
+  if (isHeating1 || isHeating2) {
+    // ALARM: At least one working sensor is too hot!
+    digitalWrite(LED_G_PIN, LOW);
+    digitalWrite(LED_R_PIN, HIGH);
+    tone(BUZ_PIN, 1000);
+  } else if (!t1Valid && !t2Valid) {
+    // BOTH SENSORS DEAD: Turn off LEDs and buzzer to prevent false alarms.
     digitalWrite(LED_G_PIN, LOW);
     digitalWrite(LED_R_PIN, LOW);
     noTone(BUZ_PIN);
   } else {
-    float eff1 = (simulationActive && sim1Valid) ? simulatedTemp1 : temp1;
-    float eff2 = (simulationActive && sim2Valid) ? simulatedTemp2 : temp2;
+    // NORMAL: At least one sensor is working, and neither is heating.
+    digitalWrite(LED_G_PIN, HIGH);
+    digitalWrite(LED_R_PIN, LOW);
+    noTone(BUZ_PIN);
+  }
 
-    // --- 2. Local alarm logic ---
-    if (eff1 > currentSafeLimit) isHeating1 = true;
-    if (eff2 > currentSafeLimit) isHeating2 = true;
-
-    if (isHeating1 || isHeating2) {
-      digitalWrite(LED_G_PIN, LOW);
-      digitalWrite(LED_R_PIN, HIGH);
-      tone(BUZ_PIN, 1000);
-    } else {
-      digitalWrite(LED_G_PIN, HIGH);
-      digitalWrite(LED_R_PIN, LOW);
-      noTone(BUZ_PIN);
-    }
-
-    // --- 3. Telemetry broadcast ---
-    unsigned long now = millis();
-    if (!simulationActive && now - lastTelemetry >= TELEMETRY_INTERVAL_MS) {
-      lastTelemetry = now;
-      broadcastTelemetry(temp1, temp2);
-    }
+  // --- 3. Telemetry broadcast ---
+  // Moved OUTSIDE the if/else block so it keeps sending data to the dashboard 
+  // even if one of the sensors is disconnected.
+  unsigned long now = millis();
+  if (!simulationActive && now - lastTelemetry >= TELEMETRY_INTERVAL_MS) {
+    lastTelemetry = now;
+    broadcastTelemetry(temp1, temp2);
   }
 
   // --- 4. Independent non-blocking servo sweep ---
