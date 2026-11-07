@@ -1,640 +1,279 @@
 <!doctype html>
 <html lang="en" data-theme="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-    <title>ThermE.Y.E. - Appliances Thermal Monitoring System</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <!-- ═══════════ MINIMAL LOADING SCREEN ═══════════ -->
-    <div id="loading-screen">
-      <div class="loader-container">
-        <!-- Logos (small, side by side) -->
-        <div class="loader-logos">
-          <img
-            class="loader-logo-school"
-            src="ffhnas_logo.png"
-            alt="FFHNAS Logo"
-            onerror="this.style.display = 'none'"
-          />
-          <img
-            class="loader-logo"
-            src="thermeye_logo.png"
-            alt="ThermE.Y.E. Logo"
-            onerror="this.style.display = 'none'"
-          />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ThermE.Y.E. - Appliances Thermal Monitoring System</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loading-screen">
+  <div class="loader-container">
+    <div class="loader-logos">
+      <img class="loader-logo-school" src="ffhnas_logo.png" alt="FFHNAS Logo" onerror="this.style.display='none'" />
+      <img class="loader-logo" src="thermeye_logo.png" alt="ThermE.Y.E. Logo" onerror="this.style.display='none'" />
+    </div>
+    <div class="loader-school">Fortunato F. Halili Agricultural National High School</div>
+    <div class="loader-project">ThermE.Y.E.</div>
+    <div class="loader-tagline">Appliances Thermal Monitoring System</div>
+    <div class="loader-developer">
+      <span class="dev-label">Developed by</span>
+      <div class="dev-columns">
+        <div class="dev-col">
+          <span class="dev-name">Giero E. Delos Santos</span>
+          <span class="dev-name">Gabriel Morallos</span>
         </div>
-
-        <!-- School name (subtle) -->
-        <div class="loader-school">
-          Fortunato F. Halili Agricultural National High School
-        </div>
-
-        <!-- Project title -->
-        <div class="loader-project">ThermE.Y.E.</div>
-        <!-- Tagline -->
-        <div class="loader-tagline">Appliances Thermal Monitoring System</div>
-        <!-- Decorative corner elements -->
-
-        <div class="loader-developer">
-          <span class="dev-label">Developed by</span>
-          <div class="dev-columns">
-            <div class="dev-col">
-              <span class="dev-name">Giero E. Delos Santos</span>
-              <span class="dev-name">Gabriel Morallos</span>
-            </div>
-            <div class="dev-col">
-              <span class="dev-name">Romelie Ocuaman</span>
-              <span class="dev-name">Jahyra F. Salmeron</span>
-            </div>
-          </div>
-          <div class="dev-center">
-            <span class="dev-name">Jericho Valimento</span>
-          </div>
-        </div>
-
-        <div
-          style="
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 80px;
-            height: 80px;
-            border-left: 5px solid rgba(59, 130, 246, 0.2);
-            border-top: 5px solid rgba(59, 130, 246, 0.2);
-            border-radius: 10px 0 0 0;
-            animation: fadeSlideUp 1s ease-out 0.2s both;
-          "
-        ></div>
-        <div
-          style="
-            position: absolute;
-            bottom: 0px;
-            right: 0px;
-            width: 80px;
-            height: 80px;
-            border-right: 5px solid rgba(59, 130, 246, 0.2);
-            border-bottom: 5px solid rgba(59, 130, 246, 0.2);
-            border-radius: 0 0 10px 0;
-            animation: fadeSlideUp 1s ease-out 0.2s both;
-          "
-        ></div>
-        <!-- Simple progress bar -->
-        <div class="progress-bar-container">
-          <div class="progress-bar-fill"></div>
+        <div class="dev-col">
+          <span class="dev-name">Romelie Ocuaman</span>
+          <span class="dev-name">Jahyra F. Salmeron</span>
         </div>
       </div>
+      <div class="dev-center"><span class="dev-name">Jericho Valimento</span></div>
     </div>
+    <div class="progress-bar-container"><div class="progress-bar-fill"></div></div>
+  </div>
+</div>
 
-    <!-- ═══════════ AUTH SCREEN ═══════════ -->
-    <div id="auth-screen">
-      <div class="auth-card">
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 0.75rem;
-          "
-        >
-          <img
-            class="auth-logo"
-            src="ffhnas_logo.png"
-            alt="FFHNAS Logo"
-            onerror="this.style.display = 'none'"
-            style="width: 80px; height: 80px; object-fit: contain"
-          />
-          <img
-            class="auth-logo"
-            src="thermeye_logo.png"
-            alt="ThermE.Y.E. Logo"
-            onerror="this.style.display = 'none'"
-            style="width: 120px; height: 120px; object-fit: contain"
-          />
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div style="display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:0.75rem">
+      <img class="auth-logo" src="ffhnas_logo.png" alt="FFHNAS Logo" onerror="this.style.display='none'" style="width:80px;height:80px;object-fit:contain" />
+      <img class="auth-logo" src="thermeye_logo.png" alt="ThermE.Y.E. Logo" onerror="this.style.display='none'" style="width:120px;height:120px;object-fit:contain" />
+    </div>
+    <div class="auth-title">Admin Access</div>
+    <div class="auth-subtitle">Sign in with your dedicated admin account</div>
+    <input type="email" class="auth-input" id="authEmail" placeholder="Admin email address" autocomplete="email" />
+    <div class="password-row">
+      <input type="password" class="auth-input" id="authPassword" placeholder="Admin password" autocomplete="current-password" />
+      <button type="button" class="password-toggle-btn" id="passwordToggleBtn">Show</button>
+    </div>
+    <div class="auth-links-row">
+      <button type="button" class="auth-link-btn" id="forgotPasswordBtn">Forgot password?</button>
+    </div>
+    <button class="auth-btn" id="authSubmitBtn">Sign In</button>
+    <div class="auth-error" id="authError"></div>
+    <div class="auth-success" id="authSuccess"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard-container">
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="brand">
+  <img src="ffhnas_logo.png" alt="FFHNAS" style="height:40px;object-fit:contain" onerror="this.style.display='none'" />
+  <img src="thermeye_logo.png" alt="ThermE.Y.E." style="height:40px;object-fit:contain" onerror="this.style.display='none'" />
+  <div class="header-datetime">
+          <span id="currentDate">--</span>
+          <span style="opacity:.4">·</span>
+          <span id="currentTime">--</span>
         </div>
-        <div class="auth-title">Admin Access</div>
-        <div class="auth-subtitle">
-          Sign in with your dedicated admin account
-        </div>
-        <input
-          type="email"
-          class="auth-input"
-          id="authEmail"
-          placeholder="Admin email address"
-          autocomplete="email"
-        />
-        <div class="password-row">
-          <input
-            type="password"
-            class="auth-input"
-            id="authPassword"
-            placeholder="Admin password"
-            autocomplete="current-password"
-          />
-          <button
-            type="button"
-            class="password-toggle-btn"
-            id="passwordToggleBtn"
-          >
-            Show
-          </button>
-        </div>
-        <div class="auth-links-row">
-          <button type="button" class="auth-link-btn" id="forgotPasswordBtn">
-            Forgot password?
-          </button>
-        </div>
-        <button class="auth-btn" id="authSubmitBtn">Sign In</button>
-        <div class="auth-error" id="authError"></div>
-        <div class="auth-success" id="authSuccess"></div>
       </div>
-    </div>
-
-    <!-- ═══════════ MAIN DASHBOARD ═══════════ -->
-    <div id="dashboard-container">
-      <div id="dashboardBrand" style="display: flex; align-items: center; gap: 0.75rem">
-        <button id="showSimulationBtn" class="school-logo-button" title="Open simulation mode">
-          <img
-            src="ffhnas_logo.png"
-            alt="Open simulation mode"
-            style="height: 40px; object-fit: contain"
-            onerror="this.style.display = 'none'"
-          />
+      <nav class="tab-bar" role="tablist">
+        <button class="active" data-tab="dashboard" type="button">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          Dashboard
         </button>
-        <img
-          src="thermeye_logo.png"
-          alt="ThermE.Y.E."
-          style="height: 45px; object-fit: contain"
-          onerror="this.style.display = 'none'"
-        />
-      </div>
-      <!-- Header -->
-      <div id="dashboardHeader" class="header-controls">
-        <div class="header-title-group">
-          <h2>Appliance Thermal Monitoring</h2>
-          <div class="datetime-display">
-            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> <span id="currentDate">--</span> | <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-            <span id="currentTime">--</span>
-          </div>
-        </div>
-        <div class="action-buttons">
-          <button
-            id="unitToggle"
-            class="theme-btn"
-            aria-label="Toggle Temperature Unit"
-          >
-            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a5 5 0 1 0 4 0Z"/><path d="M12 11v6"/></svg> <span id="unitText">Celsius (°C)</span>
-          </button>
-          <button id="themeToggle" class="theme-btn" aria-label="Toggle Theme">
-            <svg id="themeIcon" class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-            <span id="themeText">Light Mode</span>
-          </button>
-          <!-- ===== ADD THIS BUTTON TO HEADER CONTROLS ===== -->
-          <button
-            id="showMapBtn"
-            class="theme-btn"
-            style="
-              background: var(--bg-surface);
-              border: 1px solid var(--border);
-            "
-          >
-            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m9 18-6 3V6l6-3 6 3 6-3v15l-6 3-6-3Z"/><path d="M9 3v15M15 6v15"/></svg> Thermal Map
-          </button>
-          <button
-            id="signOutBtn"
-            class="theme-btn signout-btn"
-            aria-label="Sign Out"
-          >
-            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M21 19V5a2 2 0 0 0-2-2h-5"/></svg> <span>Sign Out</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Sensor Mini-Cards -->
-      <div class="sensor-cards-grid" id="sensorCardsGrid"></div>
-
-      <!-- Main Dashboard Grid -->
-      <div class="dashboard">
-        <!-- Alert Banner -->
-        <div id="alertBanner" class="alert-banner">
-          <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m12 3 10 18H2L12 3Z"/><path d="M12 9v5M12 17h.01"/></svg> Warning: Appliance core temperature has breached the safe limit!
-        </div>
-
-        <!-- Hero / Live Readout -->
-        <div class="card hero-card">
-          <span
-            class="text-muted"
-            style="
-              text-transform: uppercase;
-              font-size: 0.8rem;
-              letter-spacing: 0.08em;
-              font-weight: 700;
-            "
-          >
-            Active Sensor — <strong id="heroSensorLabel">--</strong>
-          </span>
-          <div id="currentTemp" class="temp-display">--.-°C</div>
-          <div id="thermalStateBadge" class="state-badge normal">NORMAL</div>
-          <span
-            id="tempStatusText"
-            class="text-muted"
-            style="font-size: 0.95rem"
-            >Select a sensor</span
-          >
-        </div>
-
-        <!-- Sidebar -->
-        <div class="sidebar">
-          <div class="card">
-            <h3 style="margin-bottom: 1.25rem; font-size: 1.15rem">
-              System Diagnostics
-            </h3>
-            <div class="status-row">
-              <span class="text-muted">ESP32 Unit 1</span>
-              <span id="deviceBadge1" class="badge offline">Offline</span>
-            </div>
-            <div class="status-row">
-              <span class="text-muted">Database</span>
-              <span id="dbBadge" class="badge disconnected">Disconnected</span>
-            </div>
-            <div class="status-row">
-              <span class="text-muted">User</span>
-              <span id="userBadge" class="badge connected">Authenticated</span>
-            </div>
-          </div>
-          <div class="card">
-            <h3 style="margin-bottom: 1.25rem; font-size: 1.15rem">
-              Sensor Threshold
-            </h3>
-            <label for="limitInput" id="limitLabel">Safe Limit (°C)</label>
-            <input
-              type="number"
-              id="limitInput"
-              value="50.0"
-              min="0"
-              max="150"
-              step="0.5"
-            />
-            <div
-              style="
-                margin-top: 1rem;
-                padding-top: 1rem;
-                border-top: 1px solid var(--border);
-                display: flex;
-                flex-direction: column;
-                gap: 0.85rem;
-              "
-            >
-              <div>
-                <label for="esp32HostInput1" style="margin-bottom: 0.5rem"
-                  >ESP32 Host / IP</label
-                >
-                <input
-                  type="text"
-                  id="esp32HostInput1"
-                  class="esp32-host-input"
-                  placeholder="192.168.1.50"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Stats -->
-        <div class="stats-grid">
-          <div class="stat-card" id="highTemp-card">
-            <span
-              class="text-muted"
-              style="
-                font-size: 0.8rem;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                font-weight: 700;
-              "
-              >Highest</span
-            >
-            <div id="highTemp" class="stat-val">--.-°C</div>
-          </div>
-          <div class="stat-card" id="lowTemp-card">
-            <span
-              class="text-muted"
-              style="
-                font-size: 0.8rem;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                font-weight: 700;
-              "
-              >Lowest</span
-            >
-            <div id="lowTemp" class="stat-val">--.-°C</div>
-          </div>
-          <div class="stat-card" id="avgTemp-card">
-            <span
-              class="text-muted"
-              style="
-                font-size: 0.8rem;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                font-weight: 700;
-              "
-              >Average</span
-            >
-            <div id="avgTemp" class="stat-val">--.-°C</div>
-          </div>
-        </div>
-
-        <!-- Log Table (stays inside .dashboard) -->
-        <div class="card log-card" id="logCard">
-          <div class="log-header-row">
-            <h3 style="font-size: 1.15rem">History Event Log</h3>
-            <div class="log-action-btns">
-              <button class="log-action-btn" id="printLogBtn" title="Print log">
-                <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/></svg> Print
-              </button>
-              <button
-                class="log-action-btn"
-                id="exportCsvBtn"
-                title="Export as CSV"
-              >
-                <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg> Export CSV
-              </button>
-              <button
-                class="log-action-btn"
-                id="clearLogBtn"
-                title="Clear local log"
-              >
-                <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3"/></svg> Clear
-              </button>
-            </div>
-          </div>
-          <div class="log-table-wrapper">
-            <table class="log-table">
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Room</th>
-                  <th>Sensor</th>
-                  <th>Event</th>
-                  <th>Peak</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="telemetryLogBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <!-- end .dashboard -->
-
-      <!-- ===== SIMULATION PAGE ===== -->
-      <div id="simulationPage" class="app-page" style="display: none">
-        <div class="header-controls page-header">
-          <div class="header-title-group">
-            <h2><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 16l3-4 3 2 5-7"/></svg> Simulation Mode</h2>
-            <div class="datetime-display">Test temperature alerts without an ESP32 device</div>
-          </div>
-          <button id="backFromSimulationBtn" class="theme-btn">
-            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6M9 12h12M3 5v14"/></svg> Back to Dashboard
-          </button>
-        </div>
-
-        <div class="card simulation-card">
-          <div class="simulation-badge">Simulation only</div>
-          <h3>Adjust appliance temperature</h3>
-          <p class="text-muted">Apply a test reading to the currently selected sensor.</p>
-          <label for="simulationSensorSelect">Sensor to adjust</label>
-          <select id="simulationSensorSelect" class="simulation-sensor-select"></select>
-          <div class="simulation-sensor" id="simulationSensorLabel">Selected sensor: --</div>
-          <div class="simulation-connection" id="simulationConnectionStatus">Shared control ready</div>
-          <div class="simulation-range-info">
-            <span>Random range: <strong>10°C to 100°C</strong></span>
-            <span>Safe limit: <strong id="simulationLimitValue">--.-°C</strong></span>
-          </div>
-          <div class="simulation-value-row">
-            <output id="simulationTempValue" for="simulationTempRange">55.0°C</output>
-            <span class="text-muted">Test temperature</span>
-          </div>
-          <input id="simulationTempRange" type="range" min="10" max="100" step="0.1" value="55" aria-label="Simulation temperature" />
-          <label for="simulationTempInput">Temperature (°C)</label>
-          <input id="simulationTempInput" type="number" min="10" max="100" step="0.1" value="55" />
-          <button id="randomSimulationBtn" class="theme-btn simulation-random-btn" type="button">
-            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m8 5-5 7 5 7V5ZM16 5l5 7-5 7V5ZM8 12h8"/></svg> Start Random Simulation
-          </button>
-          <button id="applySimulationBtn" class="auth-btn">
-            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg> Apply Test Reading
-          </button>
-          <div id="simulationStatus" class="auth-success" aria-live="polite"></div>
-        </div>
-
-        <h3 class="simulation-preview-title">Live Dashboard Mirror</h3>
-        <div class="dashboard simulation-preview">
-          <div id="simulationAlert" class="alert-banner">
-            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m12 3 10 18H2L12 3Z"/><path d="M12 9v5M12 17h.01"/></svg> Warning: simulated temperature has breached the safe limit.
-          </div>
-          <div class="card hero-card">
-            <span class="text-muted simulation-preview-label">SIMULATED SENSOR</span>
-            <div id="simulationCurrentTemp" class="temp-display">25.0°C</div>
-            <div id="simulationStateBadge" class="state-badge normal">NORMAL</div>
-            <span id="simulationStatusText" class="text-muted">Simulation ready</span>
-          </div>
-          <div class="stats-grid">
-            <div class="stat-card"><span class="text-muted">Highest</span><div id="simulationHighTemp" class="stat-val">25.0°C</div></div>
-            <div class="stat-card"><span class="text-muted">Lowest</span><div id="simulationLowTemp" class="stat-val">25.0°C</div></div>
-            <div class="stat-card"><span class="text-muted">Average</span><div id="simulationAvgTemp" class="stat-val">25.0°C</div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ===== THERMAL MAPPING PAGE (now outside .dashboard) ===== -->
-      <div
-        id="thermalMappingPage"
-        style="display: none; width: 100%; max-width: 1300px; margin: 0 auto"
-      >
-        <div class="header-controls" style="margin-bottom: 1.5rem">
-          <div class="header-title-group">
-            <h2><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3c2 3 5 5 5 9a5 5 0 1 1-10 0c0-2 1-4 3-6 0 2 1 3 2 4 1-2 1-4 0-7Z"/></svg> Thermal Mapping</h2>
-            <div class="datetime-display"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 16l3-4 3 2 5-7"/></svg> Real-time heat distribution</div>
-          </div>
-          <div class="action-buttons">
-            <button
-              id="backToDashboardBtn"
-              class="theme-btn"
-              style="
-                background: var(--bg-surface);
-                border: 1px solid var(--border);
-              "
-            >
-              <span>←</span> Back to Dashboard
-            </button>
-            <button
-              id="refreshMapBtn"
-              class="theme-btn"
-              style="
-                background: var(--bg-surface);
-                border: 1px solid var(--border);
-              "
-            >
-              <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14-4L3 10M3 5v5h5M4 13a8 8 0 0 0 14 4l3-3M21 19v-5h-5"/></svg> Refresh
-            </button>
-            <button id="printMapBtn" class="theme-btn"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/></svg> Print Map</button>
-          </div>
-        </div>
-
-        <!-- Mapping Grid (8x8) -->
-        <div
-          style="
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            align-items: start;
-          "
-        >
-          <!-- Thermal Grid -->
-          <div class="card" style="padding: 1.5rem">
-            <h3 style="margin-bottom: 1rem; font-size: 1.1rem">
-              Thermal Grid (8×8)
-            </h3>
-            <div
-              id="thermalGridContainer"
-              style="
-                display: grid;
-                grid-template-columns: repeat(8, 1fr);
-                gap: 0px;
-                aspect-ratio: 1/1;
-                max-width: 500px;
-                margin: 0 auto;
-              "
-            >
-              <!-- 64 cells generated by JS -->
-            </div>
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                margin-top: 1rem;
-                font-size: 0.8rem;
-                color: var(--text-muted);
-              "
-            >
-              <span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2v20M4 7l16 10M20 7 4 17M12 2l2 3M12 2l-2 3M12 22l2-3M12 22l-2-3"/></svg> Cold</span>
-              <span style="display: flex; gap: 0.5rem; align-items: center">
-                <span
-                  style="
-                    display: inline-block;
-                    width: 20px;
-                    height: 10px;
-                    background: linear-gradient(
-                      to right,
-                      #1e3a8a,
-                      #3b82f6,
-                      #f59e0b,
-                      #f43f5e
-                    );
-                    border-radius: 4px;
-                  "
-                ></span>
-              </span>
-              <span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3c2 3 5 5 5 9a5 5 0 1 1-10 0c0-2 1-4 3-6 0 2 1 3 2 4 1-2 1-4 0-7Z"/></svg> Hot</span>
-            </div>
-            <div
-              style="margin-top: 1rem; text-align: center; font-weight: 600"
-              id="mapSensorLabel"
-            >
-              Sensor: --
-            </div>
-          </div>
-
-          <!-- Statistics & Controls -->
-          <div style="display: flex; flex-direction: column; gap: 1rem">
-            <div class="card" style="padding: 1.5rem">
-              <h3 style="margin-bottom: 1rem; font-size: 1.1rem">
-                <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 16l3-4 3 2 5-7"/></svg> Map Statistics
-              </h3>
-              <div class="status-row">
-                <span class="text-muted">Average Temp</span>
-                <span id="mapAvgTemp">--.-°C</span>
-              </div>
-              <div class="status-row">
-                <span class="text-muted">Max Temp</span>
-                <span id="mapMaxTemp">--.-°C</span>
-              </div>
-              <div class="status-row">
-                <span class="text-muted">Min Temp</span>
-                <span id="mapMinTemp">--.-°C</span>
-              </div>
-              <div class="status-row">
-            </div>
-            <div class="card" style="padding: 1.5rem">
-              <h3 style="margin-bottom: 1rem; font-size: 1.1rem">
-                <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 9h12a4 4 0 0 1 3.8 5.2l-1.1 3.5a2 2 0 0 1-3.5.7L15 16H9l-2.2 2.4a2 2 0 0 1-3.5-.7l-1.1-3.5A4 4 0 0 1 6 9Z"/><path d="M7 12v4M5 14h4M16 13h.01M19 15h.01"/></svg> Controls
-              </h3>
-              <label for="mapSensorSelect" style="margin-bottom: 0.5rem"
-                >Select Sensor</label
-              >
-              <select
-                id="mapSensorSelect"
-                style="
-                  width: 100%;
-                  padding: 0.75rem;
-                  background: var(--input-bg);
-                  border: 1px solid var(--border);
-                  border-radius: 10px;
-                  color: var(--text-main);
-                  font-weight: 600;
-                  outline: none;
-                "
-              >
-                <!-- populated by JS -->
-              </select>
-              <p
-                style="
-                  margin-top: 1rem;
-                  font-size: 0.85rem;
-                  color: var(--text-muted);
-                "
-              >
-                Map updates automatically from the selected sensor.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Map History Log -->
-        <div class="card log-card" style="margin-top: 2rem">
-          <div class="log-header-row">
-            <h3 style="font-size: 1.15rem"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 3h12v18H6zM9 7h6M9 11h6M9 15h4"/></svg> Mapping History</h3>
-            <div class="log-action-btns">
-              <button class="log-action-btn" id="clearMapLogBtn">
-                <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3"/></svg> Clear
-              </button>
-            </div>
-          </div>
-          <div class="log-table-wrapper">
-            <table class="log-table">
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Sensor</th>
-                  <th>Avg</th>
-                  <th>Max</th>
-                  <th>Min</th>
-                </tr>
-              </thead>
-              <tbody id="mapLogBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <!-- end #thermalMappingPage -->
+        <button data-tab="log" type="button">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M6 3h12v18H6zM9 7h6M9 11h6M9 15h4"/></svg>
+          Log
+        </button>
+        <button data-tab="map" type="button">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 3c2 3 5 5 5 9a5 5 0 1 1-10 0c0-2 1-4 3-6 0 2 1 3 2 4 1-2 1-4 0-7Z"/></svg>
+         Thermal Map
+        </button>
+      </nav>
     </div>
-    <!-- end #dashboard-contadiner -->
+    <div class="header-right">
+      <div class="status-chip live" id="statusChip" title="Connection status">
+        <span class="dot"></span>
+        <span id="statusChipText">Live</span>
+      </div>
+      <button class="icon-btn" id="openSettingsBtn" title="Settings" type="button">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+      </button>
+      <button class="icon-btn" id="themeToggle" title="Toggle theme" type="button">
+        <svg class="icon" viewBox="0 0 24 24" id="themeIcon"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="icon-btn danger" id="signOutBtn" title="Sign out" type="button">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M21 19V5a2 2 0 0 0-2-2h-5"/></svg>
+      </button>
+    </div>
+  </header>
 
-    <script src="script.js"></script>
-    <script type="module" src="firebase.js"></script>
-  </body>
+  <!-- DASHBOARD PAGE -->
+  <section class="page active" data-page="dashboard">
+    <div class="alert-banner" id="alertBanner" style="display:none"></div>
+    <div class="dash-grid">
+      <div class="hero-card">
+        <div class="hero-top">
+          <div class="hero-sensor">
+            <span class="label">Active Sensor</span>
+            <select id="activeSensorSelect" class="sensor-select"></select>
+          </div>
+          <span class="state-badge normal" id="thermalStateBadge">NORMAL</span>
+        </div>
+        <div class="hero-main">
+          <div class="temp-block status-safe" id="tempBlock">
+            <div class="temp-big" id="currentTemp">--.-°C</div>
+            <div class="status-text" id="tempStatusText">Waiting for data...</div>
+          </div>
+          <div class="spark-block">
+            <div class="spark-label"><span>Last 60s</span><span id="sparkNow">--.-°C</span></div>
+            <svg class="spark-svg" id="sparkSvg" viewBox="0 0 200 70" preserveAspectRatio="none">
+              <path class="fill" id="sparkFill" d=""/>
+              <path class="line" id="sparkLine" d=""/>
+            </svg>
+          </div>
+        </div>
+        <div class="inline-stats">
+          <div class="item high"><span class="lbl">High</span><span class="val" id="highTemp">--.-°C</span></div>
+          <div class="item low"><span class="lbl">Low</span><span class="val" id="lowTemp">--.-°C</span></div>
+          <div class="item avg"><span class="lbl">Avg</span><span class="val" id="avgTemp">--.-°C</span></div>
+          <div class="item" style="margin-left:auto">
+            <span class="lbl">Last Reading</span>
+            <span class="val" id="lastReading" style="color:var(--text-muted);font-size:.95rem">--</span>
+          </div>
+        </div>
+      </div>
+      <div class="side-card">
+        <h3>Sensor Threshold</h3>
+        <div>
+          <label for="limitInput" id="limitLabel">Safe Limit (°C)</label>
+          <input type="number" id="limitInput" min="0" max="150" step="0.5" value="50.0" />
+        </div>
+        <div style="margin-top:.5rem">
+          <div class="info-row"><span class="k">Unit</span><span class="v" id="unitDisplay">Celsius</span></div>
+          <div class="info-row"><span class="k">ESP32 Host</span><span class="v mono" id="hostDisplay" style="font-size:.78rem">—</span></div>
+          <div class="info-row"><span class="k">ESP32 Status</span><span id="deviceBadge1" class="badge offline">Offline</span></div>
+          <div class="info-row"><span class="k">Database</span><span id="dbBadge" class="badge disconnected">Disconnected</span></div>
+          <div class="info-row"><span class="k">User</span><span id="userBadge" class="badge connected">Authenticated</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="recent-card">
+      <div class="recent-header">
+        <h3>Recent Events</h3>
+        <button class="view-all-btn" data-goto="log" type="button">
+          View All
+          <svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+      <div class="events-list" id="recentEvents"></div>
+    </div>
+  </section>
+
+  <!-- LOG PAGE -->
+  <section class="page" data-page="log">
+    <div class="log-card">
+      <div class="log-toolbar">
+        <h3>History Event Log</h3>
+        <div class="log-actions">
+          <button class="action-btn" id="printLogBtn" type="button">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/></svg> Print
+          </button>
+          <button class="action-btn" id="exportCsvBtn" type="button">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg> Export CSV
+          </button>
+          <button class="action-btn" id="clearLogBtn" type="button">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3"/></svg> Clear
+          </button>
+        </div>
+      </div>
+      <div class="log-table-wrap">
+        <table class="log-table">
+          <thead><tr><th>Time</th><th>Room</th><th>Sensor</th><th>Event</th><th>Peak</th><th>Status</th></tr></thead>
+          <tbody id="telemetryLogBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP PAGE -->
+  <section class="page" id="thermalMappingPage" data-page="map">
+    <div class="map-grid">
+      <div class="side-card">
+        <h3>Estimated Heat Distribution</h3>
+        <p class="muted" style="font-size:.8rem;margin-bottom:1rem">Interpolated from single-point MLX90614 readings.</p>
+        <div id="thermalGridContainer" class="heatmap"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:1rem;font-size:.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em">
+          <span>Cooler</span>
+          <span style="width:120px;height:8px;background:linear-gradient(to right,#1e3a8a,#3b82f6,#f59e0b,#f43f5e);border-radius:4px"></span>
+          <span>Warmer</span>
+        </div>
+        <div style="margin-top:1rem;text-align:center;font-weight:600" id="mapSensorLabel">Sensor: --</div>
+      </div>
+      <div class="side-card">
+        <h3>Map Statistics</h3>
+        <div class="info-row"><span class="k">Average</span><span class="v" id="mapAvgTemp">--</span></div>
+        <div class="info-row"><span class="k">Maximum</span><span class="v" id="mapMaxTemp" style="color:var(--danger)">--</span></div>
+        <div class="info-row"><span class="k">Minimum</span><span class="v" id="mapMinTemp" style="color:var(--primary)">--</span></div>
+        <div class="info-row"><span class="k">Hotspot</span><span class="v" id="mapHotspot">--</span></div>
+        <h3 style="margin-top:1rem">Controls</h3>
+        <label for="mapSensorSelect" style="margin-bottom:.5rem">Select Sensor</label>
+        <select id="mapSensorSelect" class="sensor-select"></select>
+        <div style="display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap">
+          <button class="action-btn" id="refreshMapBtn" type="button">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14-4L3 10M3 5v5h5M4 13a8 8 0 0 0 14 4l3-3M21 19v-5h-5"/></svg> Refresh
+          </button>
+          <button class="action-btn" id="printMapBtn" type="button">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/></svg> Print Map
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="log-card">
+      <div class="log-toolbar">
+        <h3>Mapping History</h3>
+        <button class="action-btn" id="clearMapLogBtn" type="button">Clear</button>
+      </div>
+      <div class="log-table-wrap">
+        <table class="log-table">
+          <thead><tr><th>Time</th><th>Sensor</th><th>Avg</th><th>Max</th><th>Min</th></tr></thead>
+          <tbody id="mapLogBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div
+<!-- SETTINGS MODAL -->
+<div class="modal-backdrop" id="settingsModal">
+  <div class="modal" role="dialog">
+    <div class="modal-header">
+      <h3>Settings</h3>
+      <button class="modal-close" id="closeSettingsBtn" aria-label="Close" type="button">×</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <span class="field-label">Temperature Unit</span>
+        <div class="segmented" id="unitSegmented">
+          <button data-unit="C" class="active" type="button">Celsius (°C)</button>
+          <button data-unit="F" type="button">Fahrenheit (°F)</button>
+        </div>
+      </div>
+     <div>
+  <span class="field-label">ESP32 Host / IP</span>
+  <input type="text" id="esp32HostInput1" placeholder="192.168.1.50" />
+  <p class="muted" style="font-size:.75rem;margin-top:.5rem">Leave blank to disconnect.</p>
+</div>
+<div>
+  <span class="field-label">Sensor Names</span>
+  <div id="sensorNamesEditor" style="display:flex;flex-direction:column;gap:.85rem"></div>
+</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" id="cancelSettingsBtn" type="button">Cancel</button>
+      <button class="btn-primary" id="saveSettingsBtn" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script type="module" src="firebase.js"></script>
+</body>
 </html>
