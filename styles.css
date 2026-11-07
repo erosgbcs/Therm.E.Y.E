@@ -1764,3 +1764,28 @@
 .temp-block.status-danger .status-text { color: var(--danger); }
 .temp-block.status-warning .status-text { color: var(--warning); }
 .temp-block.status-safe .status-text { color: var(--success); }
+/* ═══════════════════════════════════════════════════════════════
+   TREND INDICATOR (rising / falling / stable)
+   ═══════════════════════════════════════════════════════════════ */
+.trend-row {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  margin-top: .35rem;
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  color: var(--text-muted);
+  transition: color .3s ease;
+}
+.trend-row.hidden { display: none; }
+.trend-arrow {
+  font-size: 1.15rem;
+  line-height: 1;
+  width: 1em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.trend-row.trend-rising  { color: var(--warning); }
+.trend-row.trend-falling { color: var(--success); }
+.trend-row.trend-stable  { color: var(--text-muted); }

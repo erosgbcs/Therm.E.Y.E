@@ -189,8 +189,9 @@ function updateLimitInputForActiveSensor() {
 // REFRESH HERO + STATS + NEW UI
 // ═══════════════════════════════════════════════════════════════
 function refreshHeroDisplay() {
+  renderTrendIndicator();
   const sd = getActiveSensorData();
-
+  
   if (!sd || sd.currentTemp === null) {
     $currentTemp.innerText = "--.-°C";
     $currentTemp.className = "temp-big";
@@ -309,6 +310,60 @@ function renderSparkline() {
   lineEl.setAttribute("d", linePath);
   fillEl.setAttribute("d", fillPath);
   if (nowEl && sd && sd.currentTemp !== null) nowEl.textContent = formatTemp(sd.currentTemp);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INLINE STATS
+// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// TREND INDICATOR (rising / falling / stable)
+// ═══════════════════════════════════════════════════════════════
+function renderTrendIndicator() {
+  const row = document.getElementById("trendRow");
+  const arrow = document.getElementById("trendArrow");
+  const label = document.getElementById("trendLabel");
+  if (!row || !arrow || !label) return;
+  
+  const sd = getActiveSensorData();
+  if (!sd || sd.currentTemp === null || !sd.dataLog || sd.dataLog.length < 5) {
+    row.className = "trend-row hidden";
+    return;
+  }
+  
+  const windowSize = 20;
+  const window = sd.dataLog.slice(-windowSize);
+  if (window.length < 5) {
+    row.className = "trend-row hidden";
+    return;
+  }
+  
+  const first = window[0];
+  const last = window[window.length - 1];
+  const delta = last - first;
+  // Assume ~1 sample/sec (matches ESP32 broadcast interval)
+  const perMin = (delta / (window.length - 1)) * 60; // °C/min
+  const absRate = Math.abs(perMin);
+  
+  const rateDisplay = isCelsius ? perMin : (perMin * 9) / 5;
+  const unitLabel = isCelsius ? "°C" : "°F";
+  
+  let direction, arrowChar;
+  if (absRate < 0.3) {
+    direction = "stable";
+    arrowChar = "→";
+    label.textContent = "Stable";
+  } else if (perMin > 0) {
+    direction = "rising";
+    arrowChar = perMin >= 1.5 ? "↑" : "↗";
+    label.textContent = `Rising +${rateDisplay.toFixed(1)}${unitLabel}/min`;
+  } else {
+    direction = "falling";
+    arrowChar = perMin <= -1.5 ? "↓" : "↘";
+    label.textContent = `Falling ${rateDisplay.toFixed(1)}${unitLabel}/min`;
+  }
+  
+  arrow.textContent = arrowChar;
+  row.className = "trend-row trend-" + direction;
 }
 
 // ═══════════════════════════════════════════════════════════════

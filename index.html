@@ -119,10 +119,14 @@
           <span class="state-badge normal" id="thermalStateBadge">NORMAL</span>
         </div>
         <div class="hero-main">
-          <div class="temp-block status-safe" id="tempBlock">
-            <div class="temp-big" id="currentTemp">--.-°C</div>
-            <div class="status-text" id="tempStatusText">Waiting for data...</div>
-          </div>
+                  <div class="temp-block status-safe" id="tempBlock">
+           <div class="temp-big" id="currentTemp">--.-°C</div>
+           <div class="trend-row hidden" id="trendRow">
+             <span class="trend-arrow" id="trendArrow">→</span>
+             <span class="trend-label" id="trendLabel">Stable</span>
+           </div>
+           <div class="status-text" id="tempStatusText">Waiting for data...</div>
+         </div>
           <div class="spark-block">
             <div class="spark-label"><span>Last 60s</span><span id="sparkNow">--.-°C</span></div>
             <svg class="spark-svg" id="sparkSvg" viewBox="0 0 200 70" preserveAspectRatio="none">
@@ -240,7 +244,7 @@
       </div>
     </div>
   </section>
-</div
+</div>
 <!-- SETTINGS MODAL -->
 <div class="modal-backdrop" id="settingsModal">
   <div class="modal" role="dialog">
